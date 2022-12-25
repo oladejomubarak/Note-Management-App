@@ -1,8 +1,5 @@
 package com.example.notemanagement.services;
 
-
-
-
 import com.example.notemanagement.data.dtos.request.CreateEntriesRequest;
 import com.example.notemanagement.data.dtos.request.EntriesUpdateRequest;
 import com.example.notemanagement.data.dtos.response.CreateEntriesResponse;
@@ -12,6 +9,8 @@ import com.example.notemanagement.data.repository.EntriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class EntriesServicesImpl implements EntriesServices{
     @Autowired
@@ -20,7 +19,7 @@ public class EntriesServicesImpl implements EntriesServices{
 
     @Override
     public CreateEntriesResponse createEntries(CreateEntriesRequest createEntriesRequest) {
-        entries.setLocalDateTime(createEntriesRequest.getLocalDateTime());
+        entries.setLocalDateTime(LocalDateTime.now());
         entries.setTitle(createEntriesRequest.getTitle());
         entries.setBody(createEntriesRequest.getBody());
         entriesRepository.save(entries);
@@ -29,29 +28,27 @@ public class EntriesServicesImpl implements EntriesServices{
         createEntriesResponse.setStatusCode(201);
 
         return createEntriesResponse;
+
     }
 
     @Override
     public GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest) {
         Entries foundEntries = entriesRepository.findById(entriesUpdateRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
-        foundEntries.setLocalDateTime(entriesUpdateRequest.getLocalDateTime() != null
-                ? entriesUpdateRequest.getLocalDateTime(): entries.getLocalDateTime() );
+        foundEntries.setLocalDateTime(LocalDateTime.now());
         foundEntries.setTitle(entriesUpdateRequest.getTitle() != null && !entriesUpdateRequest.getTitle().equals("")
-                ? entriesUpdateRequest.getTitle() : entries.getTitle());
+                ? entriesUpdateRequest.getTitle() : foundEntries.getTitle());
         foundEntries.setBody(entriesUpdateRequest.getBody() != null && !entriesUpdateRequest.getBody().equals("")
-                ? entriesUpdateRequest.getBody() : entries.getBody());
+                ? entriesUpdateRequest.getBody() : foundEntries.getBody());
         entriesRepository.save(foundEntries);
         return new GetResponse("Entry updated successfully");
     }
-
-    @Override
-    public Entries findEntryByTitle(String title) {
-
-        return entriesRepository.findEntriesByTitle(title).orElseThrow(()->
-                new RuntimeException("Entry with the title: "+ title +"does not exist"));
-    }
-
+//    @Override
+//    public Entries findEntryByTitle(String title) {
+//
+//        return entriesRepository.findEntriesByTitle(title).orElseThrow(()->
+//                new RuntimeException("Entry with the title: "+ title +"does not exist"));
+//    }
     @Override
     public String viewEntryById(int id) {
         Entries foundEntry = entriesRepository.findById(id).orElseThrow(()->
@@ -70,5 +67,4 @@ public class EntriesServicesImpl implements EntriesServices{
         entriesRepository.deleteAll();
         return new GetResponse("All entries have been cleared");
     }
-
 }

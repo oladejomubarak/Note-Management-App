@@ -58,19 +58,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public GetResponse updateUser(UserUpdateRequest userUpdateRequest) {
-        User user = userRepositories.findById(userUpdateRequest.getId())
+        User foundUser = userRepositories.findById(userUpdateRequest.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setEmail(userUpdateRequest.getEmail() != null
-                && !userUpdateRequest.getEmail().equals("") ? userUpdateRequest.getEmail() : user.getEmail());
-        user.setPassword(userUpdateRequest.getPassword() != null
-                && !userUpdateRequest.getPassword().equals("") ? userUpdateRequest.getPassword() : user.getPassword());
-        user.setFirstName(userUpdateRequest.getFirstName() != null
-                && !userUpdateRequest.getFirstName().equals("") ? userUpdateRequest.getFirstName() : user.getFirstName());
-        user.setLastName(userUpdateRequest.getLastName() != null
-                && !userUpdateRequest.getLastName().equals("") ? userUpdateRequest.getLastName() : user.getLastName());
-        user.setPhoneNumber(userUpdateRequest.getPhoneNumber() != null
-                && !userUpdateRequest.getPhoneNumber().equals("") ? userUpdateRequest.getPhoneNumber() : user.getPhoneNumber());
-        userRepositories.save(user);
+        foundUser.setEmail(userUpdateRequest.getEmail() != null
+                && !userUpdateRequest.getEmail().equals("") ? userUpdateRequest.getEmail() : foundUser.getEmail());
+        foundUser.setPassword(userUpdateRequest.getPassword() != null
+                && !userUpdateRequest.getPassword().equals("") ? userUpdateRequest.getPassword() : foundUser.getPassword());
+        foundUser.setFirstName(userUpdateRequest.getFirstName() != null
+                && !userUpdateRequest.getFirstName().equals("") ? userUpdateRequest.getFirstName() : foundUser.getFirstName());
+        foundUser.setLastName(userUpdateRequest.getLastName() != null
+                && !userUpdateRequest.getLastName().equals("") ? userUpdateRequest.getLastName() : foundUser.getLastName());
+        foundUser.setPhoneNumber(userUpdateRequest.getPhoneNumber() != null
+                && !userUpdateRequest.getPhoneNumber().equals("") ? userUpdateRequest.getPhoneNumber() : foundUser.getPhoneNumber());
+        userRepositories.save(foundUser);
         return new GetResponse("User detail updated successfully");
     }
     @Override
