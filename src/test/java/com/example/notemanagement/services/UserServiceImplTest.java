@@ -56,16 +56,16 @@ class UserServiceImplTest {
     }
     @Test
     void testUserCanRegister(){
-//        CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
-        CreateUserResponse createUserResponse1 = userService.createUser(createUserRequest1);
+       CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
+//        CreateUserResponse createUserResponse1 = userService.createUser(createUserRequest1);
 //        CreateUserResponse createUserResponse2 = userService.createUser(createUserRequest2);
-//        assertNotNull(createUserResponse);
-        assertNotNull(createUserResponse1);
+       assertNotNull(createUserResponse);
+//        assertNotNull(createUserResponse1);
 //        assertNotNull(createUserResponse2);
 
-//        assertEquals("User created successfully", createUserResponse.getMessage());
-        assertEquals("User created successfully", createUserResponse1.getMessage());
-//        assertEquals("User created successfully", createUserResponse2.getMessage());
+        assertEquals("User created successfully", createUserResponse.getMessage());
+        //assertEquals("User created successfully", createUserResponse1.getMessage());
+//       assertEquals("User created successfully", createUserResponse2.getMessage());
     }
 
     @Test void testThatUserCanLogin(){

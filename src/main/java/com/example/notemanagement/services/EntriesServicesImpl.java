@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EntriesServicesImpl implements EntriesServices{
@@ -50,10 +51,9 @@ public class EntriesServicesImpl implements EntriesServices{
 //                new RuntimeException("Entry with the title: "+ title +"does not exist"));
 //    }
     @Override
-    public String viewEntryById(int id) {
-        Entries foundEntry = entriesRepository.findById(id).orElseThrow(()->
+    public Entries viewEntryById(int id) {
+        return entriesRepository.findById(id).orElseThrow(()->
                 new RuntimeException("Entry with the id"+ id +"does not exist"));
-        return foundEntry.toString();
     }
 
     @Override

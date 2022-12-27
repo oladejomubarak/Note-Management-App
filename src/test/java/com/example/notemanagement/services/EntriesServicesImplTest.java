@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -60,11 +61,12 @@ class EntriesServicesImplTest {
 
     }
     @Test void testThatEntryCanBeViewed(){
-        String entryToView = entriesServices.viewEntryById(1);
-        System.out.println(entryToView);
+//        String entryToView = entriesServices.viewEntryById(1);
+        Entries foundEntry = entriesServices.viewEntryById(1);
+        assertEquals("A title", foundEntry.getTitle());
     }
     @Test void testThatEntryCanBeDeletedById(){
-        GetResponse deleteResponseById = entriesServices.deleteEntryById(52);
+        GetResponse deleteResponseById = entriesServices.deleteEntryById(1);
         assertEquals("Entry has been deleted successfully", deleteResponseById.getMessage());
     }
     @Test void testThatAllEntriesCanBeCleared(){

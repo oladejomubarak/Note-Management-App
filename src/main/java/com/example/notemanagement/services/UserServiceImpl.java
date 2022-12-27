@@ -20,19 +20,23 @@ public class UserServiceImpl implements UserService{
     private final User user = new User();
     @Override
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
-        if (!UserValidator.isValidEmail(createUserRequest.getEmail())) throw new RuntimeException(
-                String.format("The email %s is invalid", createUserRequest.getEmail()));
-        if (!UserValidator.isValidPassword(createUserRequest.getPassword())) throw new RuntimeException(
-                String.format("The password %s is invalid", createUserRequest.getPassword()));
-        if (!UserValidator.isValidPhoneNumber(createUserRequest.getPhoneNumber())) throw new RuntimeException(
-                String.format("The phone number %s is invalid", createUserRequest.getPhoneNumber()));
+        validateInput(createUserRequest);
+        return registerUser(createUserRequest);
+    }
 
 
+    private CreateUserResponse registerUser(CreateUserRequest createUserRequest) {
+        if(userRepositories.findUserByEmail(createUserRequest.getEmail()).isPresent())
+            throw new RuntimeException("The email already exists, try another");
+        else
+            user.setEmail(createUserRequest.getEmail());
+        if(userRepositories.findUserByEmail(createUserRequest.getPhoneNumber()).isPresent())
+            throw new RuntimeException("Phone number already exists, choose another phone number");
+        else
+            user.setPhoneNumber(createUserRequest.getPhoneNumber());
         user.setFirstName(createUserRequest.getFirstName());
         user.setLastName(createUserRequest.getLastName());
-        user.setEmail(createUserRequest.getEmail());
         user.setPassword(createUserRequest.getPassword());
-        user.setPhoneNumber(createUserRequest.getPhoneNumber());
 
 
         userRepositories.save(user);
@@ -40,17 +44,27 @@ public class UserServiceImpl implements UserService{
         CreateUserResponse createUserResponse = new CreateUserResponse();
         createUserResponse.setMessage("User created successfully");
         createUserResponse.setStatusCode(201);
-
         return createUserResponse;
+    }
 
+    private void validateInput(CreateUserRequest createUserRequest) {
+        if (!UserValidator.isValidEmail(createUserRequest.getEmail())) throw new RuntimeException(
+                String.format("The email %s is invalid", createUserRequest.getEmail()));
+        if (!UserValidator.isValidPassword(createUserRequest.getPassword())) throw new RuntimeException(
+                String.format("The password %s is invalid", createUserRequest.getPassword()));
+        if (!UserValidator.isValidPhoneNumber(createUserRequest.getPhoneNumber())) throw new RuntimeException(
+                String.format("The phone number %s is invalid", createUserRequest.getPhoneNumber()));
     }
 
     @Override
     public LoginResponse userLogin(LoginRequest loginRequest) {
-        User findUser = userRepositories.findUserByEmail(loginRequest.getEmail());
-        if(findUser.getEmail().isEmpty()) throw new RuntimeException("Email not found");
+        User findUser = userRepositories.findUserByEmail(loginRequest.getEmail()).orElseThrow(()->
+                new RuntimeException("Email not found"));
         //findUser.setEmail(loginRequest.getEmail());
-        findUser.setPassword(loginRequest.getPassword());
+        if(loginRequest.getPassword().equals(findUser.getPassword()))
+            findUser.setPassword(loginRequest.getPassword());
+        else
+            throw new RuntimeException("Incorrect password");
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setMessage("Login is successful");
         return loginResponse;

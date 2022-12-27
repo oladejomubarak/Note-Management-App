@@ -15,7 +15,7 @@ public class Notes {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set <Entries> entries = new HashSet<>();
 
 }

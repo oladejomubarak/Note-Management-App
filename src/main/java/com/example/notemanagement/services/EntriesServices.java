@@ -10,7 +10,7 @@ public interface EntriesServices {
     CreateEntriesResponse createEntries(CreateEntriesRequest createEntriesRequest);
     GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest);
 //    Entries findEntryByTitle (String title);
-    String viewEntryById(int id);
+    Entries viewEntryById(int id);
     GetResponse deleteEntryById(int id);
     GetResponse deleteAllEntries();
 }

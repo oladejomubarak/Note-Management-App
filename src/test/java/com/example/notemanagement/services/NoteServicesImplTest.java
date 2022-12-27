@@ -1,5 +1,6 @@
 package com.example.notemanagement.services;
 
+import com.example.notemanagement.data.dtos.request.AddEntriesRequest;
 import com.example.notemanagement.data.dtos.request.CreateNoteRequest;
 import com.example.notemanagement.data.dtos.request.NoteUpdateRequest;
 import com.example.notemanagement.data.dtos.response.CreateNoteResponse;
@@ -8,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -44,5 +48,15 @@ class NoteServicesImplTest {
     @Test void testThatNoteCanBeDeleted(){
         GetResponse getDeleteResponse =noteServices.deleteNote(2);
         assertEquals("note deleted successfully", getDeleteResponse.getMessage());
+    }
+    @Test void testThatNoteCanAddEntries(){
+        AddEntriesRequest addEntriesRequest = new AddEntriesRequest();
+        addEntriesRequest.setId(1);
+        addEntriesRequest.setTitle("note title2");
+        addEntriesRequest.setBody("note body2");
+        addEntriesRequest.setLocalDateTime(LocalDateTime.now());
+        GetResponse entriesResponse = noteServices.addEntries(addEntriesRequest);
+
+        assertEquals("Entry added successfully", entriesResponse.getMessage());
     }
 }
