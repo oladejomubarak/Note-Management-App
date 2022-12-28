@@ -23,9 +23,10 @@ public class EntriesServicesImpl implements EntriesServices{
         entries.setLocalDateTime(LocalDateTime.now());
         entries.setTitle(createEntriesRequest.getTitle());
         entries.setBody(createEntriesRequest.getBody());
-        entriesRepository.save(entries);
+        Entries savedEntry = entriesRepository.save(entries);
         CreateEntriesResponse createEntriesResponse = new CreateEntriesResponse();
         createEntriesResponse.setMessage("Entry created successfully");
+        createEntriesResponse.setId(savedEntry.getId());
         createEntriesResponse.setStatusCode(201);
 
         return createEntriesResponse;

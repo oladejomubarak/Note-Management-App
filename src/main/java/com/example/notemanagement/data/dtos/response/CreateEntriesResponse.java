@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CreateEntriesResponse {
+    private int id;
     private int statusCode;
     private String message;
 }
