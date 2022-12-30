@@ -29,7 +29,7 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> deleteEntryById(@PathVariable int id){
         return ResponseEntity.ok(entriesServices.deleteEntryById(id));
     }
-    @DeleteMapping("deleteallentries")
+    @DeleteMapping("/deleteallentries")
     public ResponseEntity<?> deleteAllEntries(){
         return ResponseEntity.ok(entriesServices.deleteAllEntries());
     }
