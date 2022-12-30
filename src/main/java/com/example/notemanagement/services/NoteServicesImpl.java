@@ -23,9 +23,10 @@ public class NoteServicesImpl implements NoteServices{
     @Override
     public CreateNoteResponse createNote(CreateNoteRequest createNoteRequest) {
         notes.setName(createNoteRequest.getNoteName());
-        noteRepositories.save(notes);
+        Notes savedNote = noteRepositories.save(notes);
         CreateNoteResponse createNoteResponse = new CreateNoteResponse();
         createNoteResponse.setMessage("Note created successfully");
+        createNoteRequest.setId(savedNote.getId());
         createNoteResponse.setStatusCode(201);
 
         return createNoteResponse;
