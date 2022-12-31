@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Formatter;
 
 @Service
 public class NoteServicesImpl implements NoteServices{
@@ -54,7 +52,7 @@ public class NoteServicesImpl implements NoteServices{
         Entries entries = new Entries();
         entries.setTitle(addEntriesRequest.getTitle());
         entries.setBody(addEntriesRequest.getBody());
-        entries.setLocalDateTime(LocalDateTime.now());
+        entries.setDateAndTime(LocalDateTime.now());
         foundNote.getEntries().add(entries);
         noteRepositories.save(foundNote);
         return new GetResponse("Entry added successfully");

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class EntriesServicesImpl implements EntriesServices{
@@ -20,7 +19,7 @@ public class EntriesServicesImpl implements EntriesServices{
 
     @Override
     public CreateEntriesResponse createEntries(CreateEntriesRequest createEntriesRequest) {
-        entries.setLocalDateTime(LocalDateTime.now());
+        entries.setDateAndTime(LocalDateTime.now());
         entries.setTitle(createEntriesRequest.getTitle());
         entries.setBody(createEntriesRequest.getBody());
         Entries savedEntry = entriesRepository.save(entries);
@@ -37,7 +36,7 @@ public class EntriesServicesImpl implements EntriesServices{
     public GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest) {
         Entries foundEntries = entriesRepository.findById(entriesUpdateRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
-        foundEntries.setLocalDateTime(LocalDateTime.now());
+        foundEntries.setDateAndTime(LocalDateTime.now());
         foundEntries.setTitle(entriesUpdateRequest.getTitle() != null && !entriesUpdateRequest.getTitle().equals("")
                 ? entriesUpdateRequest.getTitle() : foundEntries.getTitle());
         foundEntries.setBody(entriesUpdateRequest.getBody() != null && !entriesUpdateRequest.getBody().equals("")

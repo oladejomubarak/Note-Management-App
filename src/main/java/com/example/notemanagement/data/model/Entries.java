@@ -15,5 +15,5 @@ public class Entries {
     private int id;
     private String body;
     private String title;
-    private LocalDateTime localDateTime;
+    private LocalDateTime dateAndTime;
 }

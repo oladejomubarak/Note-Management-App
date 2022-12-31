@@ -5,14 +5,12 @@ import com.example.notemanagement.data.dtos.request.EntriesUpdateRequest;
 import com.example.notemanagement.data.dtos.response.CreateEntriesResponse;
 import com.example.notemanagement.data.dtos.response.GetResponse;
 import com.example.notemanagement.data.model.Entries;
-import com.example.notemanagement.data.repository.EntriesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -29,13 +27,13 @@ class EntriesServicesImplTest {
         createEntriesRequest = new CreateEntriesRequest();
         createEntriesRequest.setTitle("A title");
         createEntriesRequest.setBody("A body");
-        createEntriesRequest.setLocalDateTime(LocalDateTime.now());
+        createEntriesRequest.setDateAndTime(LocalDateTime.now());
 
 
         createEntriesRequest1 = new CreateEntriesRequest();
         createEntriesRequest1.setTitle("A title");
         createEntriesRequest1.setBody("A body");
-        createEntriesRequest1.setLocalDateTime(LocalDateTime.now());
+        createEntriesRequest1.setDateAndTime(LocalDateTime.now());
     }
     @Test void testThatEntryCanBeCreated(){
         CreateEntriesResponse createEntriesResponse = entriesServices.createEntries(createEntriesRequest);
