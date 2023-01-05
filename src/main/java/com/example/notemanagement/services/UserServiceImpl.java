@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService{
 
     private CreateUserResponse registerUser(CreateUserRequest createUserRequest) {
         if(userRepositories.findUserByEmail(createUserRequest.getEmail()).isPresent())
-            throw new RuntimeException("The email already exists, try another");
+            throw new RuntimeException("The email already exists, try another email");
         else
             user.setEmail(createUserRequest.getEmail());
         if(userRepositories.findUserByEmail(createUserRequest.getPhoneNumber()).isPresent())

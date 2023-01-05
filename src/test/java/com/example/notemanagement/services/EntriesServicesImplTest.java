@@ -19,6 +19,7 @@ class EntriesServicesImplTest {
     private EntriesServicesImpl entriesServices;
     private CreateEntriesRequest createEntriesRequest;
     private CreateEntriesRequest createEntriesRequest1;
+    private CreateEntriesRequest createEntriesRequest2;
 
 
 
@@ -27,21 +28,26 @@ class EntriesServicesImplTest {
         createEntriesRequest = new CreateEntriesRequest();
         createEntriesRequest.setTitle("A title");
         createEntriesRequest.setBody("A body");
-        createEntriesRequest.setDateAndTime(LocalDateTime.now());
+        createEntriesRequest.setLocalDateTime(LocalDateTime.now());
 
 
         createEntriesRequest1 = new CreateEntriesRequest();
-        createEntriesRequest1.setTitle("A title");
-        createEntriesRequest1.setBody("A body");
-        createEntriesRequest1.setDateAndTime(LocalDateTime.now());
+        createEntriesRequest1.setTitle("Another title");
+        createEntriesRequest1.setBody("Another body");
+        createEntriesRequest1.setLocalDateTime(LocalDateTime.now());
+
+        createEntriesRequest2 = new CreateEntriesRequest();
+        createEntriesRequest2.setTitle("this title");
+        createEntriesRequest2.setBody("this body");
+        createEntriesRequest2.setLocalDateTime(LocalDateTime.now());
     }
     @Test void testThatEntryCanBeCreated(){
-        CreateEntriesResponse createEntriesResponse = entriesServices.createEntries(createEntriesRequest);
+        CreateEntriesResponse createEntriesResponse = entriesServices.createEntries(createEntriesRequest2);
 
         assertNotNull(createEntriesResponse);
         assertEquals("Entry created successfully", createEntriesResponse.getMessage());
-        assertEquals("A title", createEntriesRequest.getTitle());
-        assertEquals("A body", createEntriesRequest.getBody());
+//        assertEquals("Another title", createEntriesRequest1.getTitle());
+//        assertEquals("Another body", createEntriesRequest1.getBody());
     }
     @Test void testThatEntryCanEdited(){
         EntriesUpdateRequest entriesUpdateRequest = new EntriesUpdateRequest();

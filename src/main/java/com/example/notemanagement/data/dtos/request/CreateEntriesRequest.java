@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 public class CreateEntriesRequest {
     private String title;
     private  String body;
-    private LocalDateTime dateAndTime;
+    private LocalDateTime localDateTime;
 }
