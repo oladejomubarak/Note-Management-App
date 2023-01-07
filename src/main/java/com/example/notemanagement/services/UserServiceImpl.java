@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("The email already exists, try another email");
         else
             user.setEmail(createUserRequest.getEmail());
-        if(userRepositories.findUserByEmail(createUserRequest.getPhoneNumber()).isPresent())
+        if(userRepositories.findUserByPhoneNumber(createUserRequest.getPhoneNumber()).isPresent())
             throw new RuntimeException("Phone number already exists, choose another phone number");
         else
             user.setPhoneNumber(createUserRequest.getPhoneNumber());
