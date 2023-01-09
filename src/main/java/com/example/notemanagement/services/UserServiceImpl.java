@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService{
     private final User user = new User();
     @Override
     public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
-        validateInput(createUserRequest);
+        validateRegistrationInput(createUserRequest);
         return registerUser(createUserRequest);
     }
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
         return createUserResponse;
     }
 
-    private void validateInput(CreateUserRequest createUserRequest) {
+    private void validateRegistrationInput(CreateUserRequest createUserRequest) {
         if (!UserValidator.isValidEmail(createUserRequest.getEmail())) throw new RuntimeException(
                 String.format("The email %s is invalid", createUserRequest.getEmail()));
         if (!UserValidator.isValidPassword(createUserRequest.getPassword())) throw new RuntimeException(
@@ -74,6 +74,9 @@ public class UserServiceImpl implements UserService{
     public GetResponse updateUser(UserUpdateRequest userUpdateRequest) {
         User foundUser = userRepositories.findById(userUpdateRequest.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        validateUpdateInput(userUpdateRequest);
+
         foundUser.setEmail(userUpdateRequest.getEmail() != null
                 && !userUpdateRequest.getEmail().equals("") ? userUpdateRequest.getEmail() : foundUser.getEmail());
         foundUser.setPassword(userUpdateRequest.getPassword() != null
@@ -87,6 +90,19 @@ public class UserServiceImpl implements UserService{
         userRepositories.save(foundUser);
         return new GetResponse("User detail updated successfully");
     }
+
+    private void validateUpdateInput(UserUpdateRequest userUpdateRequest) {
+        if(userUpdateRequest.getEmail() != null){
+            if (!UserValidator.isValidEmail(userUpdateRequest.getEmail())) throw new RuntimeException(
+                    String.format("The email %s is invalid", userUpdateRequest.getEmail()));}
+        if(userUpdateRequest.getPassword() != null){
+            if (!UserValidator.isValidPassword(userUpdateRequest.getPassword())) throw new RuntimeException(
+                    String.format("Password %s is weak, choose a strong one", userUpdateRequest.getPassword()));}
+        if(userUpdateRequest.getPhoneNumber() != null){
+            if (!UserValidator.isValidPhoneNumber(userUpdateRequest.getPhoneNumber())) throw new RuntimeException(
+                    String.format("The phone number %s is invalid", userUpdateRequest.getPhoneNumber()));}
+    }
+
     @Override
     public GetResponse deleteUser(int id) {
         userRepositories.deleteById(id);
