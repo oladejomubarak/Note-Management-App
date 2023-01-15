@@ -92,15 +92,15 @@ public class UserServiceImpl implements UserService{
     }
 
     private void validateUpdateInput(UserUpdateRequest userUpdateRequest) {
-        if(userUpdateRequest.getEmail() != null){
-            if (!UserValidator.isValidEmail(userUpdateRequest.getEmail())) throw new RuntimeException(
-                    String.format("The email %s is invalid", userUpdateRequest.getEmail()));}
-        if(userUpdateRequest.getPassword() != null){
-            if (!UserValidator.isValidPassword(userUpdateRequest.getPassword())) throw new RuntimeException(
-                    String.format("Password %s is weak, choose a strong one", userUpdateRequest.getPassword()));}
-        if(userUpdateRequest.getPhoneNumber() != null){
-            if (!UserValidator.isValidPhoneNumber(userUpdateRequest.getPhoneNumber())) throw new RuntimeException(
-                    String.format("The phone number %s is invalid", userUpdateRequest.getPhoneNumber()));}
+        if(userUpdateRequest.getEmail() != null && !UserValidator.isValidEmail(userUpdateRequest.getEmail()))
+            throw new RuntimeException(
+                    String.format("The email %s is invalid", userUpdateRequest.getEmail()));
+        if(userUpdateRequest.getPassword() != null && !UserValidator.isValidPassword(userUpdateRequest.getPassword()))
+            throw new RuntimeException(
+                    String.format("Password %s is weak, choose a strong one", userUpdateRequest.getPassword()));
+        if(userUpdateRequest.getPhoneNumber() != null && !UserValidator.isValidPhoneNumber(userUpdateRequest.getPhoneNumber()))
+            throw new RuntimeException(
+                    String.format("The phone number %s is invalid", userUpdateRequest.getPhoneNumber()));
     }
 
     @Override
