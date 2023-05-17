@@ -8,6 +8,9 @@ public class UserValidator {
         return password.matches("[a-zA-Z0-9+-£$%^&*()?~@#+]{8,20}");
     }
     public static boolean isValidPhoneNumber(String phoneNumber){
-        return (phoneNumber.length()>11 && phoneNumber.length() <25);
+        for (int i = 0; i < phoneNumber.length(); i++) {
+            if(!Character.isDigit(phoneNumber.charAt(i))) throw new RuntimeException("phone number can only be digits");
+        }
+        return phoneNumber.length() == 11;
     }
 }
