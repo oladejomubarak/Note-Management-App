@@ -12,10 +12,19 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String registerUser(CreateAppUserRequest createAppUserRequest) {
-        boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress()
-        );
+        boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
         if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress()).get();
+        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
+                .get();
+        AppUser appUser = new AppUser();
+        appUser.setFirstname(createAppUserRequest.getFirstname());
+        appUser.setLastname(createAppUserRequest.getLastname());
+        appUser.setEmailAddress(createAppUserRequest.getEmailAddress());
+        appUser.setPassword(createAppUserRequest.getPassword());
+        appUser.setPassword(createAppUserRequest.getConfirmPassword());
+        if (!createAppUserRequest.getPassword().equals(createAppUserRequest.getConfirmPassword()))
+            throw new IllegalStateException("passwords do not match");
+        appUserRepository.save(appUser);
         return null;
     }
 }
