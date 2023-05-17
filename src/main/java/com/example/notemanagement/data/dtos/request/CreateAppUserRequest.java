@@ -1,21 +1,17 @@
-package com.example.notemanagement.data.model;
+package com.example.notemanagement.data.dtos.request;
 
-import jakarta.persistence.*;
+import com.example.notemanagement.data.model.Notes;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-
-@Entity
 @Data
-@RequiredArgsConstructor
-
-public class AppUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CreateAppUserRequest {
 
     @NotNull(message = "This field is required")
     @NotEmpty(message = "This field is required")
@@ -32,18 +28,6 @@ public class AppUser {
     @NotEmpty(message = "This field is required")
     private String password;
 
-    private boolean isEnabled;
+    private String confirmPassword;
 
-    @OneToOne
-    private Notes note;
-
-
-    public AppUser(String firstname, String lastname, String emailAddress, String password){
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.emailAddress = emailAddress;
-        this.password = password;
-
-
-    }
 }
