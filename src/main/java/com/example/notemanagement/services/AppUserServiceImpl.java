@@ -1,9 +1,11 @@
 package com.example.notemanagement.services;
 
+import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
 import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
 import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class AppUserServiceImpl implements AppUserService{
     @Autowired
     private ConfirmationTokenService confirmationTokenService;
     @Override
-    public String registerUser(CreateAppUserRequest createAppUserRequest) {
+    public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
         boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
         if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
         AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
@@ -35,10 +37,20 @@ public class AppUserServiceImpl implements AppUserService{
             throw new IllegalStateException("passwords do not match");
         appUserRepository.save(appUser);
         String token = generateToken();
+        emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
+        token));
+        return token;
+    }
 
+    @Override
+    public String confirmToken(ConfirmationTokenRequest confirmationTokenRequest) {
+        ConfirmationToken foundToken = confirmationTokenService.getConfirmationToken(confirmationTokenRequest.getToken())
+                .orElseThrow(()-> new IllegalStateException(" such token does not exist"));
 
         return null;
     }
+
+
     private String generateToken(){
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder stringBuilder = new StringBuilder();
