@@ -6,10 +6,13 @@ import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
 import jakarta.mail.MessagingException;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 @Service
 public class AppUserServiceImpl implements AppUserService{
@@ -21,12 +24,15 @@ public class AppUserServiceImpl implements AppUserService{
     private EmailService emailService;
     @Autowired
     private ConfirmationTokenService confirmationTokenService;
+
+    //private final PasswordEncoder passwordEncoder;
     @Override
     public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
         boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
         if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
         AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
                 .get();
+
         AppUser appUser = new AppUser();
         appUser.setFirstname(createAppUserRequest.getFirstname());
         appUser.setLastname(createAppUserRequest.getLastname());
@@ -39,15 +45,51 @@ public class AppUserServiceImpl implements AppUserService{
         String token = generateToken();
         emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
         token));
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+            token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(2),
+                appUser
+        );
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+        if(!foundUser.isEnabled()){
+            String token1 = generateToken();
+            emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
+                    token1));
+
+            ConfirmationToken confirmationToken1 = new ConfirmationToken(
+                    token1,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(2),
+                    appUser
+            );
+            confirmationTokenService.saveConfirmationToken(confirmationToken1);
+        }
         return token;
     }
 
     @Override
     public String confirmToken(ConfirmationTokenRequest confirmationTokenRequest) {
+        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(confirmationTokenRequest.getEmail())
+                .orElseThrow(()-> new IllegalStateException("Wrong email provided"));
         ConfirmationToken foundToken = confirmationTokenService.getConfirmationToken(confirmationTokenRequest.getToken())
                 .orElseThrow(()-> new IllegalStateException(" such token does not exist"));
+        if(foundToken.getExpiredAt().isBefore(LocalDateTime.now())){
+            throw new IllegalStateException("Token has expired");
+        }
+        if (foundToken.getConfirmedAt() != null){
+            throw new IllegalStateException("Token has been used");
+        }
+        confirmationTokenService.setConfirmedAt(confirmationTokenRequest.getToken());
 
-        return null;
+        foundUser.setEnabled(true);
+        appUserRepository.save(foundUser);
+        return "you are successfully verified";
+    }
+
+    private String hashPassword(String password){
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
 

@@ -32,7 +32,7 @@ public class AppUser {
     @NotEmpty(message = "This field is required")
     private String password;
 
-    private boolean isEnabled;
+    private boolean isEnabled = false;
 
     @OneToOne
     private Notes note;
