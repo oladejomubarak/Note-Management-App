@@ -37,8 +37,8 @@ public class AppUserServiceImpl implements AppUserService{
         appUser.setFirstname(createAppUserRequest.getFirstname());
         appUser.setLastname(createAppUserRequest.getLastname());
         appUser.setEmailAddress(createAppUserRequest.getEmailAddress());
-        appUser.setPassword(createAppUserRequest.getPassword());
-        appUser.setPassword(createAppUserRequest.getConfirmPassword());
+        appUser.setPassword(hashPassword(createAppUserRequest.getPassword()));
+        appUser.setPassword(hashPassword(createAppUserRequest.getConfirmPassword()));
         if (!createAppUserRequest.getPassword().equals(createAppUserRequest.getConfirmPassword()))
             throw new IllegalStateException("passwords do not match");
         appUserRepository.save(appUser);
