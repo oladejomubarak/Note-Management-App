@@ -27,7 +27,8 @@ public class CreateAppUserRequest {
     @NotNull(message = "This field is required")
     @NotEmpty(message = "This field is required")
     private String password;
-
+    @NotNull(message = "This field is required")
+    @NotEmpty(message = "This field is required")
     private String confirmPassword;
 
 }

@@ -2,6 +2,7 @@ package com.example.notemanagement.services;
 
 import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
 import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
+import com.example.notemanagement.data.dtos.request.ResendTokenRequest;
 import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
@@ -30,8 +31,8 @@ public class AppUserServiceImpl implements AppUserService{
     public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
         boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
         if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
-                .get();
+//        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
+//                .get();
 
         AppUser appUser = new AppUser();
         appUser.setFirstname(createAppUserRequest.getFirstname());
@@ -49,23 +50,23 @@ public class AppUserServiceImpl implements AppUserService{
         ConfirmationToken confirmationToken = new ConfirmationToken(
             token,
                 LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(2),
+                LocalDateTime.now().plusMinutes(5),
                 appUser
         );
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        if(!foundUser.isEnabled()){
-            String token1 = generateToken();
-            emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
-                    token1));
-
-            ConfirmationToken confirmationToken1 = new ConfirmationToken(
-                    token1,
-                    LocalDateTime.now(),
-                    LocalDateTime.now().plusMinutes(2),
-                    appUser
-            );
-            confirmationTokenService.saveConfirmationToken(confirmationToken1);
-        }
+//        if(!foundUser.isEnabled()){
+//            String token1 = generateToken();
+//            emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
+//                    token1));
+//
+//            ConfirmationToken confirmationToken1 = new ConfirmationToken(
+//                    token1,
+//                    LocalDateTime.now(),
+//                    LocalDateTime.now().plusMinutes(2),
+//                    appUser
+//            );
+//            confirmationTokenService.saveConfirmationToken(confirmationToken1);
+//        }
         return token;
     }
 
@@ -91,6 +92,27 @@ public class AppUserServiceImpl implements AppUserService{
     private String hashPassword(String password){
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
+
+    @Override
+    public String resendToken (ResendTokenRequest resendTokenRequest) throws MessagingException {
+        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(resendTokenRequest.getEmail())
+                .orElseThrow(()-> new IllegalStateException("This email has not been used for registration"));
+        if (foundUser.isEnabled()){ throw new IllegalStateException("You are already verified, proceed to login");}
+        else {
+            String token = generateToken();
+            emailService.send(resendTokenRequest.getEmail(), buildEmail(foundUser.getFirstname(), token));
+
+            ConfirmationToken confirmationToken = new ConfirmationToken(
+                    token,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(5),
+                    foundUser
+            );
+            confirmationTokenService.saveConfirmationToken(confirmationToken);
+        }
+        return "token has been resent successfully";
+    }
+
 
 
     private String generateToken(){
