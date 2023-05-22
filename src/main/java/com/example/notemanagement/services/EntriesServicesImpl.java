@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EntriesServicesImpl implements EntriesServices{
@@ -19,7 +22,7 @@ public class EntriesServicesImpl implements EntriesServices{
 
     @Override
     public CreateEntriesResponse createEntries(CreateEntriesRequest createEntriesRequest) {
-        entries.setLocalDateTime(LocalDateTime.now());
+        entries.setDateCreated(LocalDateTime.now());
         entries.setTitle(createEntriesRequest.getTitle());
         entries.setBody(createEntriesRequest.getBody());
         Entries savedEntry = entriesRepository.save(entries);
@@ -36,7 +39,7 @@ public class EntriesServicesImpl implements EntriesServices{
     public GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest) {
         Entries foundEntries = entriesRepository.findById(entriesUpdateRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
-        foundEntries.setLocalDateTime(LocalDateTime.now());
+        foundEntries.setDateCreated(LocalDateTime.now());
         foundEntries.setTitle(entriesUpdateRequest.getTitle() != null && !entriesUpdateRequest.getTitle().equals("")
                 ? entriesUpdateRequest.getTitle() : foundEntries.getTitle());
         foundEntries.setBody(entriesUpdateRequest.getBody() != null && !entriesUpdateRequest.getBody().equals("")
@@ -67,4 +70,54 @@ public class EntriesServicesImpl implements EntriesServices{
         entriesRepository.deleteAll();
         return new GetResponse("All entries have been cleared");
     }
+
+    @Override
+    public List<Entries> getAllEntries() {
+        return entriesRepository.findAll();
+    }
+
+    @Override
+    public List<Entries> findEntryByKeyword(String keyword) {
+        boolean isValidKeyword = keyword.length() > 3;
+        List <Entries> foundEntries = new ArrayList<>();
+        for ( Entries entry: getAllEntries()) {
+            if(isValidKeyword && (entry.getTitle().contains(keyword) || entry.getBody().contains(keyword)))
+                foundEntries.add(entry);
+        }
+        return foundEntries;
+    }
+
+    @Override
+    public List<Entries> findEntryByTitleKeyword(String titleKeyword) {
+        boolean isValidKeyword = titleKeyword.length() > 3;
+        List <Entries> foundEntries = new ArrayList<>();
+        for ( Entries entry: getAllEntries()) {
+            if(isValidKeyword && (entry.getTitle().contains(titleKeyword)))
+                foundEntries.add(entry);
+        }
+        return foundEntries;
+    }
+
+    @Override
+    public List<Entries> findEntryByDateCreated(String createdDate) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        var formattedDate = LocalDateTime.parse(createdDate, dateTimeFormatter);
+        List <Entries> foundEntries = new ArrayList<>();
+        for ( Entries entry: getAllEntries()) {
+            if(entry.getDateCreated().equals(formattedDate))
+                foundEntries.add(entry);
+        }
+        return foundEntries;
+    }
+
+    @Override
+    public List<Entries> findEntryByTitle(String entryTitle) {
+        List <Entries>foundEntries = new ArrayList<>();
+        for (Entries entry: getAllEntries()
+             ) { if (entry.getTitle().equalsIgnoreCase(entryTitle)) foundEntries.add(entry);
+
+        }
+        return foundEntries;
+    }
+
 }

@@ -20,6 +20,8 @@ public class NoteServicesImpl implements NoteServices{
     private final Notes notes = new Notes();
     @Override
     public CreateNoteResponse createNote(CreateNoteRequest createNoteRequest) {
+        if(noteRepositories.existsNotesByNameIgnoreCase(createNoteRequest.getNoteName())) throw new IllegalStateException(
+                "A note with such name exists already, choose another note name");
         notes.setName(createNoteRequest.getNoteName());
         Notes savedNote = noteRepositories.save(notes);
         CreateNoteResponse createNoteResponse = new CreateNoteResponse();
@@ -52,7 +54,7 @@ public class NoteServicesImpl implements NoteServices{
         Entries entries = new Entries();
         entries.setTitle(addEntriesRequest.getTitle());
         entries.setBody(addEntriesRequest.getBody());
-        entries.setLocalDateTime(LocalDateTime.now());
+        entries.setDateCreated(LocalDateTime.now());
         foundNote.getEntries().add(entries);
         noteRepositories.save(foundNote);
         return new GetResponse("Entry added successfully");

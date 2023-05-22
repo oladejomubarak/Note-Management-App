@@ -2,6 +2,7 @@ package com.example.notemanagement.data.controller;
 
 import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
 import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
+import com.example.notemanagement.data.dtos.request.LoginRequest;
 import com.example.notemanagement.data.dtos.request.ResendTokenRequest;
 import com.example.notemanagement.exception.ApiResponse;
 import com.example.notemanagement.services.AppUserService;
@@ -54,6 +55,18 @@ public class AppUserController {
         ApiResponse apiResponse=ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .data(appUserService.resendToken(resendTokenRequest))
+                .timeStamp(ZonedDateTime.now())
+                .path(httpServletRequest.getRequestURI())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<?> login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
+        ApiResponse apiResponse=ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(appUserService.login(loginRequest))
                 .timeStamp(ZonedDateTime.now())
                 .path(httpServletRequest.getRequestURI())
                 .isSuccessful(true)

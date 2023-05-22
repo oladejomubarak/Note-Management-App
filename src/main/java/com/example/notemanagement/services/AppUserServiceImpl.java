@@ -2,6 +2,7 @@ package com.example.notemanagement.services;
 
 import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
 import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
+import com.example.notemanagement.data.dtos.request.LoginRequest;
 import com.example.notemanagement.data.dtos.request.ResendTokenRequest;
 import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
@@ -113,7 +114,19 @@ public class AppUserServiceImpl implements AppUserService{
         return "token has been resent successfully";
     }
 
-
+    @Override
+    public String login(LoginRequest loginRequest) {
+        var foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail())
+                .orElseThrow(()-> new IllegalStateException("This email has not been registered"));
+        if(!foundUser.isEnabled()) throw new IllegalStateException("You are have not verified your account");
+        try {
+            if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword()))
+                throw new IllegalStateException("Incorrect password");
+        } catch (IllegalStateException e){
+            throw new RuntimeException(e);
+        }
+        return "You are successfully logged in";
+    }
 
     private String generateToken(){
         SecureRandom secureRandom = new SecureRandom();

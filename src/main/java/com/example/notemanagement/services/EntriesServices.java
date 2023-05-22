@@ -6,6 +6,8 @@ import com.example.notemanagement.data.dtos.response.CreateEntriesResponse;
 import com.example.notemanagement.data.dtos.response.GetResponse;
 import com.example.notemanagement.data.model.Entries;
 
+import java.util.List;
+
 public interface EntriesServices {
     CreateEntriesResponse createEntries(CreateEntriesRequest createEntriesRequest);
     GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest);
@@ -13,4 +15,11 @@ public interface EntriesServices {
     Entries viewEntryById(int id);
     GetResponse deleteEntryById(int id);
     GetResponse deleteAllEntries();
+
+    List<Entries> getAllEntries();
+
+    List<Entries> findEntryByKeyword(String keyword);
+    List<Entries> findEntryByTitleKeyword(String titleKeyword);
+    List <Entries> findEntryByDateCreated(String createdDate);
+    List <Entries> findEntryByTitle(String entryTitle);
 }
