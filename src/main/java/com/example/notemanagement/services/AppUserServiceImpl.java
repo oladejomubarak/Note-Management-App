@@ -123,7 +123,7 @@ public class AppUserServiceImpl implements AppUserService{
             if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword()))
                 throw new IllegalStateException("Incorrect password");
         } catch (IllegalStateException e){
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
         return "You are successfully logged in";
     }
