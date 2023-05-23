@@ -2,11 +2,15 @@ package com.example.notemanagement.data.controller;
 
 import com.example.notemanagement.data.dtos.request.CreateEntriesRequest;
 import com.example.notemanagement.data.dtos.request.EntriesUpdateRequest;
+import com.example.notemanagement.exception.ApiResponse;
 import com.example.notemanagement.services.EntriesServices;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.ZonedDateTime;
 
 @RestController
 public class EntryController {
@@ -32,5 +36,17 @@ private EntriesServices entriesServices;
     @DeleteMapping("/deleteallentries")
     public ResponseEntity<?> deleteAllEntries(){
         return ResponseEntity.ok(entriesServices.deleteAllEntries());
+
     }
+    @GetMapping("/search-entry/{keyword}")
+    public ResponseEntity<?> searchEntry (@PathVariable String keyword, HttpServletRequest httpServletRequest){
+    ApiResponse apiResponse=ApiResponse.builder()
+            .status(HttpStatus.OK.value())
+            .data(entriesServices.findEntryByKeyword(keyword))
+            .timeStamp(ZonedDateTime.now())
+            .path(httpServletRequest.getRequestURI())
+            .isSuccessful(true)
+            .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+}
 }
