@@ -60,4 +60,27 @@ private EntriesServices entriesServices;
                 .build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+    @GetMapping("/search-entry/{dateCreated}")
+    public ResponseEntity<?> searchEntryByDateCreated (@PathVariable String dateCreated, HttpServletRequest httpServletRequest){
+        ApiResponse apiResponse=ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(entriesServices.findEntryByKeyword(dateCreated))
+                .timeStamp(ZonedDateTime.now())
+                .path(httpServletRequest.getRequestURI())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/search-entry/{title}")
+    public ResponseEntity<?> searchEntryByTitle (@PathVariable String title, HttpServletRequest httpServletRequest){
+        ApiResponse apiResponse=ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(entriesServices.findEntryByKeyword(title))
+                .timeStamp(ZonedDateTime.now())
+                .path(httpServletRequest.getRequestURI())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }
