@@ -49,4 +49,15 @@ private EntriesServices entriesServices;
             .build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 }
+    @GetMapping("/search-entry/{titleKeyword}")
+    public ResponseEntity<?> searchEntryByTitleKeyword (@PathVariable String titleKeyword, HttpServletRequest httpServletRequest){
+        ApiResponse apiResponse=ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(entriesServices.findEntryByTitleKeyword(titleKeyword))
+                .timeStamp(ZonedDateTime.now())
+                .path(httpServletRequest.getRequestURI())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }
