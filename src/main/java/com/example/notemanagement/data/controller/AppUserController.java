@@ -73,4 +73,15 @@ public class AppUserController {
                 .build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+    @DeleteMapping("/delete-appUser")
+    public ResponseEntity<?> deleteAppUser (String email, HttpServletRequest httpServletRequest){
+        ApiResponse apiResponse=ApiResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(appUserService.deleteAppUser(email))
+                .timeStamp(ZonedDateTime.now())
+                .path(httpServletRequest.getRequestURI())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

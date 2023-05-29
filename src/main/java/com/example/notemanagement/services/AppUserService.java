@@ -15,4 +15,5 @@ public interface AppUserService {
     String resendToken (ResendTokenRequest resendTokenRequest) throws MessagingException;
 
     String login(LoginRequest loginRequest);
+    String deleteAppUser(String email);
 }

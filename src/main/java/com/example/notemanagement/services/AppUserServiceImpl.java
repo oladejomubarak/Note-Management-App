@@ -128,6 +128,12 @@ public class AppUserServiceImpl implements AppUserService{
         return "You are successfully logged in";
     }
 
+    @Override
+    public String deleteAppUser(String email) {
+        appUserRepository.deleteAppUserByEmailAddress(email);
+        return "user deleted successfully";
+    }
+
     private String generateToken(){
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder stringBuilder = new StringBuilder();

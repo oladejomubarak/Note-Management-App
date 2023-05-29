@@ -9,4 +9,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findAppUserByEmailAddressIgnoreCase(String email);
 
     boolean existsAppUsersByEmailAddressIgnoreCase(String email);
+
+    String deleteAppUserByEmailAddress(String email);
 }
