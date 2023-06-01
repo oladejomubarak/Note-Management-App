@@ -47,7 +47,11 @@ public class AppUserController {
                 .path(httpServletRequest.getRequestURI())
                 .isSuccessful(true)
                 .build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        try {return new ResponseEntity<>(apiResponse, HttpStatus.OK);}
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
     @PostMapping("/resend-token")
     public ResponseEntity<?> resendToken(@RequestBody ResendTokenRequest resendTokenRequest, HttpServletRequest httpServletRequest)
