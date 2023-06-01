@@ -139,8 +139,9 @@ public class AppUserServiceImpl implements AppUserService{
             throw new RuntimeException("wrong old password");
         if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword()))
             throw new RuntimeException("Passwords do not match");
-
-        return null;
+        foundUser.setPassword(hashPassword(changePasswordRequest.getNewPassword()));
+        appUserRepository.save(foundUser);
+        return "Password changed successfully";
     }
 
     private String generateToken(){
