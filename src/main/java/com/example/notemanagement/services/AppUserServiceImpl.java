@@ -1,9 +1,6 @@
 package com.example.notemanagement.services;
 
-import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
-import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
-import com.example.notemanagement.data.dtos.request.LoginRequest;
-import com.example.notemanagement.data.dtos.request.ResendTokenRequest;
+import com.example.notemanagement.data.dtos.request.*;
 import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
@@ -132,6 +129,18 @@ public class AppUserServiceImpl implements AppUserService{
     public String deleteAppUser(String email) {
         appUserRepository.deleteAppUserByEmailAddress(email);
         return "user deleted successfully";
+    }
+
+    @Override
+    public String changePassword(ChangePasswordRequest changePasswordRequest) {
+        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(changePasswordRequest.getEmail())
+                .orElseThrow(()-> new RuntimeException("user not found"));
+        if(!BCrypt.checkpw(changePasswordRequest.getOldPassword(), foundUser.getPassword()))
+            throw new RuntimeException("wrong old password");
+        if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword()))
+            throw new RuntimeException("Passwords do not match");
+
+        return null;
     }
 
     private String generateToken(){
