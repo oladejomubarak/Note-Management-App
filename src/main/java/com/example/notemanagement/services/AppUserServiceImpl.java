@@ -31,7 +31,7 @@ public class AppUserServiceImpl implements AppUserService{
     @Override
     public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
         boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
-        if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
+//        if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
 //        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
 //                .get();
 

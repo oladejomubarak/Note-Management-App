@@ -43,7 +43,5 @@ public class AppUser {
         this.lastname = lastname;
         this.emailAddress = emailAddress;
         this.password = password;
-
-
     }
 }
