@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class AppUserServiceImpl implements AppUserService{
@@ -27,53 +28,40 @@ public class AppUserServiceImpl implements AppUserService{
     //private final PasswordEncoder passwordEncoder;
     @Override
     public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
-        boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress());
-//        if(emailExist) throw new IllegalStateException("email has been taken already, choose another email");
-//        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(createAppUserRequest.getEmailAddress())
-//                .get();
+        boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(
+                createAppUserRequest.getEmailAddress());
+        if(emailExist) {
+            throw new IllegalStateException("email taken, choose another email");
+        } else {
+            AppUser appUser = new AppUser();
+            appUser.setFirstname(createAppUserRequest.getFirstname());
+            appUser.setLastname(createAppUserRequest.getLastname());
+            appUser.setEmailAddress(createAppUserRequest.getEmailAddress());
+            appUser.setPassword(hashPassword(createAppUserRequest.getPassword()));
+            appUser.setPassword(hashPassword(createAppUserRequest.getConfirmPassword()));
+            if (!createAppUserRequest.getPassword().equals(createAppUserRequest.getConfirmPassword()))
+                throw new IllegalStateException("passwords do not match");
+            appUserRepository.save(appUser);
+            String token = generateToken();
+            emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
+                    token));
 
-        AppUser appUser = new AppUser();
-        appUser.setFirstname(createAppUserRequest.getFirstname());
-        appUser.setLastname(createAppUserRequest.getLastname());
-        appUser.setEmailAddress(createAppUserRequest.getEmailAddress());
-        appUser.setPassword(hashPassword(createAppUserRequest.getPassword()));
-        appUser.setPassword(hashPassword(createAppUserRequest.getConfirmPassword()));
-        if (!createAppUserRequest.getPassword().equals(createAppUserRequest.getConfirmPassword()))
-            throw new IllegalStateException("passwords do not match");
-        appUserRepository.save(appUser);
-        String token = generateToken();
-        emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
-        token));
-
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-            token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(5),
-                appUser
-        );
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-//        if(!foundUser.isEnabled()){
-//            String token1 = generateToken();
-//            emailService.send(createAppUserRequest.getEmailAddress(), buildEmail(createAppUserRequest.getFirstname(),
-//                    token1));
-//
-//            ConfirmationToken confirmationToken1 = new ConfirmationToken(
-//                    token1,
-//                    LocalDateTime.now(),
-//                    LocalDateTime.now().plusMinutes(2),
-//                    appUser
-//            );
-//            confirmationTokenService.saveConfirmationToken(confirmationToken1);
-//        }
-        return token;
+            ConfirmationToken confirmationToken = new ConfirmationToken(
+                    token,
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusMinutes(5),
+                    appUser
+            );
+            confirmationTokenService.saveConfirmationToken(confirmationToken);
+            return token;
+        }
     }
 
     @Override
     public String confirmToken(ConfirmationTokenRequest confirmationTokenRequest) {
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(confirmationTokenRequest.getEmail())
-                .orElseThrow(()-> new IllegalStateException("Wrong email provided"));
+        AppUser foundUser = findUserByEmailIgnoreCase(confirmationTokenRequest.getEmail());
         ConfirmationToken foundToken = confirmationTokenService.getConfirmationToken(confirmationTokenRequest.getToken())
-                .orElseThrow(()-> new IllegalStateException(" such token does not exist"));
+                .orElseThrow(()-> new IllegalStateException("such token does not exist"));
         if(foundToken.getExpiredAt().isBefore(LocalDateTime.now())){
             throw new IllegalStateException("Token has expired");
         }
@@ -93,8 +81,7 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String resendToken (ResendTokenRequest resendTokenRequest) throws MessagingException {
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(resendTokenRequest.getEmail())
-                .orElseThrow(()-> new IllegalStateException("This email has not been used for registration"));
+        AppUser foundUser = findUserByEmailIgnoreCase(resendTokenRequest.getEmail());
         if (foundUser.isEnabled()){ throw new IllegalStateException("You are already verified, proceed to login");}
         else {
             String token = generateToken();
@@ -113,8 +100,7 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-        var foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail())
-                .orElseThrow(()-> new IllegalStateException("This email has not been registered"));
+        var foundUser = findUserByEmailIgnoreCase(loginRequest.getEmail());
         if(!foundUser.isEnabled()) throw new IllegalStateException("You are have not verified your account");
         try {
             if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword()))
@@ -127,14 +113,14 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String deleteAppUser(String email) {
-        appUserRepository.deleteAppUserByEmailAddress(email);
+        var foundUser = findUserByEmailIgnoreCase(email);
+        appUserRepository.delete(foundUser);
         return "user deleted successfully";
     }
 
     @Override
     public String changePassword(ChangePasswordRequest changePasswordRequest) {
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(changePasswordRequest.getEmail())
-                .orElseThrow(()-> new RuntimeException("user not found"));
+        AppUser foundUser = findUserByEmailIgnoreCase(changePasswordRequest.getEmail());
         if(!BCrypt.checkpw(changePasswordRequest.getOldPassword(), foundUser.getPassword()))
             throw new RuntimeException("wrong old password");
         if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword()))
@@ -142,6 +128,47 @@ public class AppUserServiceImpl implements AppUserService{
         foundUser.setPassword(hashPassword(changePasswordRequest.getNewPassword()));
         appUserRepository.save(foundUser);
         return "Password changed successfully";
+    }
+
+    @Override
+    public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws MessagingException {
+        AppUser foundUser = findUserByEmailIgnoreCase(forgotPasswordRequest.getEmail());
+        String token = generateToken();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+            token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(5),
+                foundUser
+        );
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+        emailService.send(foundUser.getEmailAddress(), buildForgotPasswordEmail(foundUser.getFirstname(), token));
+        return token;
+    }
+
+    @Override
+    public String resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        AppUser foundUser = findUserByEmailIgnoreCase(resetPasswordRequest.getEmail());
+        ConfirmationToken foundToken = confirmationTokenService.getConfirmationToken(resetPasswordRequest.getToken())
+                .orElseThrow(()-> new IllegalStateException("such token does not exist"));
+        if(foundToken.getExpiredAt().isBefore(LocalDateTime.now())){
+            throw new IllegalStateException("Token has expired");
+        }
+        if (foundToken.getConfirmedAt() != null){
+            throw new IllegalStateException("Token has been used");
+        }
+        confirmationTokenService.setConfirmedAt(resetPasswordRequest.getToken());
+        if(!resetPasswordRequest.getNewPassword().equals(resetPasswordRequest.getConfirmNewPassword())) {throw
+                new IllegalStateException("passwords do not match");
+        }
+        foundUser.setPassword(hashPassword(resetPasswordRequest.getNewPassword()));
+        appUserRepository.save(foundUser);
+        return "Password reset successfully";
+    }
+
+    @Override
+    public AppUser findUserByEmailIgnoreCase(String email) {
+        return appUserRepository.findAppUserByEmailAddressIgnoreCase(email)
+                .orElseThrow(()-> new IllegalStateException("User not found"));
     }
 
     private String generateToken(){
@@ -221,5 +248,18 @@ public class AppUserServiceImpl implements AppUserService{
                 "  </tbody></table><div class=\"yj6qo\"></div><div class=\"adL\">\n" +
                 "\n" +
                 "</div></div>";
+    }
+    private String buildForgotPasswordEmail (String lastName, String token){
+        return "Here's the link to reset your password"
+                + "                                      "
+                + "                                        "
+                + "<p>Hello \"" + lastName + "\",</p>"
+                + "<p>You have requested to reset your password.</p>"
+                + "<p>Click the link below to change your password:</p>"
+                + "<p><a href=\"" + token + "\">Change my password</a></p>"
+                + "<br>"
+                + "<p>Ignore this email if you do remember your password, "
+                + "or you have not made the request.</p> " +
+                "<p>Token expires in 5 minutes</p>";
     }
 }

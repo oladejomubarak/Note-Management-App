@@ -1,6 +1,7 @@
 package com.example.notemanagement.services;
 
 import com.example.notemanagement.data.dtos.request.*;
+import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import jakarta.mail.MessagingException;
 
@@ -15,4 +16,7 @@ public interface AppUserService {
     String deleteAppUser(String email);
 
     String changePassword(ChangePasswordRequest changePasswordRequest);
+    String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws MessagingException;
+    String resetPassword(ResetPasswordRequest resetPasswordRequest);
+    AppUser findUserByEmailIgnoreCase(String email);
 }

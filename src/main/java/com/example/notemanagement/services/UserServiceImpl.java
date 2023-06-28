@@ -1,8 +1,6 @@
 package com.example.notemanagement.services;
 
-import com.example.notemanagement.data.dtos.request.CreateUserRequest;
-import com.example.notemanagement.data.dtos.request.LoginRequest;
-import com.example.notemanagement.data.dtos.request.UserUpdateRequest;
+import com.example.notemanagement.data.dtos.request.*;
 import com.example.notemanagement.data.dtos.response.CreateUserResponse;
 import com.example.notemanagement.data.dtos.response.GetResponse;
 import com.example.notemanagement.data.dtos.response.LoginResponse;
@@ -107,5 +105,15 @@ public class UserServiceImpl implements UserService{
     public GetResponse deleteUser(int id) {
         userRepositories.deleteById(id);
         return new GetResponse("User deleted successfully");
+    }
+
+    @Override
+    public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        return null;
+    }
+
+    @Override
+    public String resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        return null;
     }
 }
