@@ -1,9 +1,6 @@
 package com.example.notemanagement.data.controller;
 
-import com.example.notemanagement.data.dtos.request.ConfirmationTokenRequest;
-import com.example.notemanagement.data.dtos.request.CreateAppUserRequest;
-import com.example.notemanagement.data.dtos.request.LoginRequest;
-import com.example.notemanagement.data.dtos.request.ResendTokenRequest;
+import com.example.notemanagement.data.dtos.request.*;
 import com.example.notemanagement.exception.ApiResponse;
 import com.example.notemanagement.services.AppUserService;
 import jakarta.mail.MessagingException;
@@ -28,7 +25,7 @@ public class AppUserController {
     public ResponseEntity<?> registerAppUser(@RequestBody CreateAppUserRequest createAppUserRequest,
                                              HttpServletRequest httpServletRequest) throws MessagingException {
 
-        try{
+        try {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(appUserService.registerUser(createAppUserRequest))
@@ -53,9 +50,9 @@ public class AppUserController {
 
     @PatchMapping("confirm-token")
     public ResponseEntity<?> confirmToken(@RequestBody ConfirmationTokenRequest confirmationTokenRequest,
-                                          HttpServletRequest httpServletRequest){
+                                          HttpServletRequest httpServletRequest) {
 
-        try{
+        try {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(appUserService.confirmToken(confirmationTokenRequest))
@@ -77,10 +74,11 @@ public class AppUserController {
         }
 
     }
+
     @PostMapping("/resend-token")
     public ResponseEntity<?> resendToken(@RequestBody ResendTokenRequest resendTokenRequest, HttpServletRequest httpServletRequest)
-            throws MessagingException{
-        try{
+            throws MessagingException {
+        try {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(appUserService.resendToken(resendTokenRequest))
@@ -105,7 +103,7 @@ public class AppUserController {
 
     @GetMapping("/login")
     public ResponseEntity<?> login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
-        try{
+        try {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(appUserService.login(loginRequest))
@@ -127,9 +125,10 @@ public class AppUserController {
         }
 
     }
+
     @DeleteMapping("/delete-appUser/{email}")
-    public ResponseEntity<?> deleteAppUser (@PathVariable String email, HttpServletRequest httpServletRequest){
-        ApiResponse apiResponse=ApiResponse.builder()
+    public ResponseEntity<?> deleteAppUser(@PathVariable String email, HttpServletRequest httpServletRequest) {
+        ApiResponse apiResponse = ApiResponse.builder()
                 .status(HttpStatus.OK.value())
                 .data(appUserService.deleteAppUser(email))
                 .timeStamp(ZonedDateTime.now())
@@ -137,5 +136,57 @@ public class AppUserController {
                 .isSuccessful(true)
                 .build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest,
+                                            HttpServletRequest httpServletRequest) throws MessagingException {
+
+        try {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.OK.value())
+                    .data(appUserService.forgotPassword(forgotPasswordRequest))
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .message("Token has been sent to yur email address you used to register")
+                    .isSuccessful(true)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (IllegalStateException e) {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .isSuccessful(false)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+
+        }
+    }
+
+    @PatchMapping("reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
+                                           HttpServletRequest httpServletRequest) {
+        try {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.OK.value())
+                    .data(appUserService.resetPassword(resetPasswordRequest))
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .message("You are successfully logged in")
+                    .isSuccessful(true)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (IllegalStateException e) {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .isSuccessful(false)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
     }
 }
