@@ -38,7 +38,7 @@ private EntriesServices entriesServices;
 
     }
     @GetMapping("/search-entry/{keyword}")
-    public ResponseEntity<?> searchEntry (@PathVariable String keyword, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> searchEntryByKeyword (@PathVariable String keyword, HttpServletRequest httpServletRequest){
     ApiResponse apiResponse=ApiResponse.builder()
             .status(HttpStatus.OK.value())
             .data(entriesServices.findEntryByKeyword(keyword))
@@ -63,7 +63,7 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> searchEntryByDateCreated (@PathVariable String dateCreated, HttpServletRequest httpServletRequest){
         ApiResponse apiResponse=ApiResponse.builder()
                 .status(HttpStatus.OK.value())
-                .data(entriesServices.findEntryByKeyword(dateCreated))
+                .data(entriesServices.findEntryByDateCreated(dateCreated))
                 .timeStamp(ZonedDateTime.now())
                 .path(httpServletRequest.getRequestURI())
                 .isSuccessful(true)
@@ -74,7 +74,7 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> searchEntryByTitle (@PathVariable String title, HttpServletRequest httpServletRequest){
         ApiResponse apiResponse=ApiResponse.builder()
                 .status(HttpStatus.OK.value())
-                .data(entriesServices.findEntryByKeyword(title))
+                .data(entriesServices.findEntryByTitle(title))
                 .timeStamp(ZonedDateTime.now())
                 .path(httpServletRequest.getRequestURI())
                 .isSuccessful(true)
