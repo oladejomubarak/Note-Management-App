@@ -2,15 +2,12 @@ package com.example.notemanagement.services;
 
 import com.example.notemanagement.data.dtos.request.CreateEntriesRequest;
 import com.example.notemanagement.data.dtos.request.EntriesUpdateRequest;
-import com.example.notemanagement.data.dtos.response.CreateEntriesResponse;
 import com.example.notemanagement.data.dtos.response.GetResponse;
 import com.example.notemanagement.data.model.Entries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -28,24 +25,24 @@ class EntriesServicesImplTest {
         createEntriesRequest = new CreateEntriesRequest();
         createEntriesRequest.setTitle("A title");
         createEntriesRequest.setBody("A body");
-        createEntriesRequest.setLocalDateTime(LocalDateTime.now());
+        //createEntriesRequest.setDateCreated(LocalDateTime.now());
 
 
         createEntriesRequest1 = new CreateEntriesRequest();
         createEntriesRequest1.setTitle("Another title");
         createEntriesRequest1.setBody("Another body");
-        createEntriesRequest1.setLocalDateTime(LocalDateTime.now());
+        //createEntriesRequest1.setDateCreated(LocalDateTime.now());
 
         createEntriesRequest2 = new CreateEntriesRequest();
         createEntriesRequest2.setTitle("this title");
         createEntriesRequest2.setBody("this body");
-        createEntriesRequest2.setLocalDateTime(LocalDateTime.now());
+        //createEntriesRequest2.setDateCreated(LocalDateTime.now());
     }
     @Test void testThatEntryCanBeCreated(){
-        CreateEntriesResponse createEntriesResponse = entriesServices.createEntries(createEntriesRequest2);
+        Entries entries = entriesServices.createEntries(createEntriesRequest2);
 
-        assertNotNull(createEntriesResponse);
-        assertEquals("Entry created successfully", createEntriesResponse.getMessage());
+        assertNotNull(entries);
+        //assertEquals("Entry created successfully", entries.getMessage());
 //        assertEquals("Another title", createEntriesRequest1.getTitle());
 //        assertEquals("Another body", createEntriesRequest1.getBody());
     }
@@ -66,7 +63,7 @@ class EntriesServicesImplTest {
     }
     @Test void testThatEntryCanBeViewed(){
 //        String entryToView = entriesServices.viewEntryById(1);
-        Entries foundEntry = entriesServices.viewEntryById(1);
+        com.example.notemanagement.data.model.Entries foundEntry = entriesServices.viewEntryById(1);
         assertEquals("A title", foundEntry.getTitle());
     }
     @Test void testThatEntryCanBeDeletedById(){

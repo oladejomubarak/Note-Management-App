@@ -5,13 +5,17 @@ import com.example.notemanagement.data.dtos.request.EntriesUpdateRequest;
 import com.example.notemanagement.exception.ApiResponse;
 import com.example.notemanagement.services.EntriesServices;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.ZonedDateTime;
 
+@Slf4j
 @RestController
+@CrossOrigin(origins = "*")
+@RequestMapping("api/v1")
 public class EntryController {
     @Autowired
 private EntriesServices entriesServices;
@@ -27,6 +31,10 @@ private EntriesServices entriesServices;
     @GetMapping("/viewentry/{id}")
     public ResponseEntity<?> viewEntryById(@PathVariable int id){
         return ResponseEntity.ok(entriesServices.viewEntryById(id));
+    }
+    @GetMapping("/entries")
+    public ResponseEntity<?> viewAllEntries(){
+        return ResponseEntity.ok(entriesServices.getAllEntries());
     }
     @DeleteMapping("/deleteentry/{id}")
     public ResponseEntity<?> deleteEntryById(@PathVariable int id){

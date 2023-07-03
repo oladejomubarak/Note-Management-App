@@ -54,7 +54,7 @@ public class NoteServicesImpl implements NoteServices{
         Entries entries = new Entries();
         entries.setTitle(addEntriesRequest.getTitle());
         entries.setBody(addEntriesRequest.getBody());
-        entries.setDateCreated(LocalDateTime.now());
+        entries.setDateCreated(LocalDateTime.now().toString());
         foundNote.getEntries().add(entries);
         noteRepositories.save(foundNote);
         return new GetResponse("Entry added successfully");

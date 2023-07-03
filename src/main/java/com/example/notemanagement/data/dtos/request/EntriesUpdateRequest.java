@@ -8,5 +8,5 @@ public class EntriesUpdateRequest {
     private int id;
     private String title;
     private String body;
-    private LocalDateTime localDateTime;
+    private String localDateTime;
 }
