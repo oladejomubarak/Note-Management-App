@@ -59,7 +59,7 @@ public class EntriesServicesImpl implements EntriesServices{
 //                new RuntimeException("Entry with the title: "+ title +"does not exist"));
 //    }
     @Override
-    public com.example.notemanagement.data.model.Entries viewEntryById(int id) {
+    public Entries viewEntryById(int id) {
         return entriesRepository.findById(id).orElseThrow(()->
                 new RuntimeException("Entry with the id"+ id +"does not exist"));
     }
@@ -77,12 +77,12 @@ public class EntriesServicesImpl implements EntriesServices{
     }
 
     @Override
-    public List<com.example.notemanagement.data.model.Entries> getAllEntries() {
+    public List<Entries> getAllEntries() {
         return entriesRepository.findAll();
     }
 
     @Override
-    public List<com.example.notemanagement.data.model.Entries> findEntryByKeyword(String keyword) {
+    public List<Entries> findEntryByKeyword(String keyword) {
         boolean isValidKeyword = keyword.length() > 3;
         List <com.example.notemanagement.data.model.Entries> foundEntries = new ArrayList<>();
         for ( com.example.notemanagement.data.model.Entries entry: getAllEntries()) {
@@ -93,7 +93,7 @@ public class EntriesServicesImpl implements EntriesServices{
     }
 
     @Override
-    public List<com.example.notemanagement.data.model.Entries> findEntryByTitleKeyword(String titleKeyword) {
+    public List<Entries> findEntryByTitleKeyword(String titleKeyword) {
         boolean isValidKeyword = titleKeyword.length() > 3;
         List <com.example.notemanagement.data.model.Entries> foundEntries = new ArrayList<>();
         for ( com.example.notemanagement.data.model.Entries entry: getAllEntries()) {
@@ -104,19 +104,20 @@ public class EntriesServicesImpl implements EntriesServices{
     }
 
     @Override
-    public List<com.example.notemanagement.data.model.Entries> findEntryByDateCreated(String createdDate) {
+    public List<Entries> findEntryByDateCreated(String createdDate) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         var formattedDate = LocalDateTime.parse(createdDate, dateTimeFormatter);
-        List <com.example.notemanagement.data.model.Entries> foundEntries = new ArrayList<>();
-        for ( com.example.notemanagement.data.model.Entries entry: getAllEntries()) {
-            if(entry.getDateCreated().equals(formattedDate))
+        String dateInString = formattedDate.toString();
+        List <Entries> foundEntries = new ArrayList<>();
+        for ( Entries entry: getAllEntries()) {
+            if(entry.getDateCreated().equals(dateInString))
                 foundEntries.add(entry);
         }
         return foundEntries;
     }
 
     @Override
-    public List<com.example.notemanagement.data.model.Entries> findEntryByTitle(String entryTitle) {
+    public List<Entries> findEntryByTitle(String entryTitle) {
         List <com.example.notemanagement.data.model.Entries>foundEntries = new ArrayList<>();
         for (com.example.notemanagement.data.model.Entries entry: getAllEntries()
              ) { if (entry.getTitle().equalsIgnoreCase(entryTitle)) foundEntries.add(entry);
