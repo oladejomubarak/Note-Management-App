@@ -8,7 +8,10 @@ import com.example.notemanagement.data.repository.EntriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +20,15 @@ import java.util.List;
 public class EntriesServicesImpl implements EntriesServices{
     @Autowired
     private EntriesRepository entriesRepository;
-    LocalDateTime now = LocalDateTime.now();
+    LocalDate dateNow = LocalDate.now();
+    LocalTime timeNow = LocalTime.now();
+
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    String formattedDate = now.format(dateFormatter);
+    String formattedDate = dateNow.format(dateFormatter);
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-    String formattedTime = now.format(timeFormatter);
+    String formattedTime = timeNow.format(timeFormatter);
     @Override
     public Entries createEntries(CreateEntriesRequest createEntriesRequest) {
         Entries entries = new Entries();
