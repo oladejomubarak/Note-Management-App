@@ -24,11 +24,11 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> createEntries(@RequestBody CreateEntriesRequest createEntriesRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(entriesServices.createEntries(createEntriesRequest));
     }
-    @PatchMapping("/updateentry")
+    @PatchMapping("/update-entry")
     public ResponseEntity<?> updateEntries(@RequestBody EntriesUpdateRequest entriesUpdateRequest){
         return ResponseEntity.ok(entriesServices.updateEntries(entriesUpdateRequest));
     }
-    @GetMapping("/viewentry/{id}")
+    @GetMapping("/view-entry/{id}")
     public ResponseEntity<?> viewEntryById(@PathVariable int id){
         return ResponseEntity.ok(entriesServices.viewEntryById(id));
     }
@@ -36,7 +36,7 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> viewAllEntries(){
         return ResponseEntity.ok(entriesServices.getAllEntries());
     }
-    @DeleteMapping("/deleteentry/{id}")
+    @DeleteMapping("/delete-entry/{id}")
     public ResponseEntity<?> deleteEntryById(@PathVariable int id){
         return ResponseEntity.ok(entriesServices.deleteEntryById(id));
     }

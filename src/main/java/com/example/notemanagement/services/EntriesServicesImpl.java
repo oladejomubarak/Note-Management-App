@@ -19,7 +19,7 @@ public class EntriesServicesImpl implements EntriesServices{
     private EntriesRepository entriesRepository;
     LocalDateTime now = LocalDateTime.now();
 
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     String formattedDate = now.format(dateFormatter);
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
