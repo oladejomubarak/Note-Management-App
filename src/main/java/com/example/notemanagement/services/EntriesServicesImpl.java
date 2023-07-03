@@ -17,12 +17,18 @@ import java.util.List;
 public class EntriesServicesImpl implements EntriesServices{
     @Autowired
     private EntriesRepository entriesRepository;
-    private final com.example.notemanagement.data.model.Entries entries = new com.example.notemanagement.data.model.Entries();
+    LocalDateTime now = LocalDateTime.now();
 
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    String formattedDate = now.format(dateFormatter);
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    String formattedTime = now.format(timeFormatter);
     @Override
     public Entries createEntries(CreateEntriesRequest createEntriesRequest) {
         Entries entries = new Entries();
-        entries.setDateCreated(LocalDateTime.now().toString());
+        entries.setDateCreated(formattedDate);
+        entries.setTimeCreated(formattedTime);
         entries.setTitle(createEntriesRequest.getTitle());
         entries.setBody(createEntriesRequest.getBody());
         entriesRepository.save(entries);

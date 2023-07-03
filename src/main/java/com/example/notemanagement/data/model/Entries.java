@@ -16,4 +16,5 @@ public class Entries {
     private String body;
     private String title;
     private String dateCreated;
+    private String timeCreated;
 }
