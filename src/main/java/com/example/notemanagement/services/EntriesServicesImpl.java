@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class EntriesServicesImpl implements EntriesServices{
@@ -24,17 +25,28 @@ public class EntriesServicesImpl implements EntriesServices{
     LocalTime timeNow = LocalTime.now();
 
 
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
     String formattedDate = dateNow.format(dateFormatter);
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     String formattedTime = timeNow.format(timeFormatter);
     @Override
     public Entries createEntries(CreateEntriesRequest createEntriesRequest) {
+        String[] words = createEntriesRequest.getTitle().split(" ");
+
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            String firstLetter = word.substring(0, 1).toUpperCase();
+            String restOfWord = word.substring(1);
+            String capitalizedWord = firstLetter + restOfWord;
+            sb.append(capitalizedWord).append(" ");
+        }
+        String modifiedTitle = sb.toString().trim();
+
         Entries entries = new Entries();
         entries.setDateCreated(formattedDate);
         entries.setTimeCreated(formattedTime);
-        entries.setTitle(createEntriesRequest.getTitle());
+        entries.setTitle(modifiedTitle);
         entries.setBody(createEntriesRequest.getBody());
         entriesRepository.save(entries);
 
