@@ -24,7 +24,6 @@ public class EntriesServicesImpl implements EntriesServices{
     LocalDate dateNow = LocalDate.now();
     LocalTime timeNow = LocalTime.now();
 
-
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
     String formattedDate = dateNow.format(dateFormatter);
 
@@ -78,7 +77,7 @@ public class EntriesServicesImpl implements EntriesServices{
     @Override
     public Entries viewEntryById(int id) {
         return entriesRepository.findById(id).orElseThrow(()->
-                new RuntimeException("Entry with the id"+ id +"does not exist"));
+                new RuntimeException("Entry with the id "+ id +" does not exist"));
     }
 
     @Override
