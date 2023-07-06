@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EntriesServices {
     Entries createEntries(CreateEntriesRequest createEntriesRequest);
-    GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest);
+    Entries updateEntries(int entryId, EntriesUpdateRequest entriesUpdateRequest);
 //    Entries findEntryByTitle (String title);
     Entries viewEntryById(int id);
     GetResponse deleteEntryById(int id);

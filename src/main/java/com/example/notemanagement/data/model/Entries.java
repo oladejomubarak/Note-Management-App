@@ -10,7 +10,7 @@ public class Entries {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @Column(length = 30000)
+    @Column(length = 50000)
     private String body;
     private String title;
     private String dateCreated;

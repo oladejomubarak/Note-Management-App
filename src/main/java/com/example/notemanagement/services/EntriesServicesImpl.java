@@ -7,6 +7,7 @@ import com.example.notemanagement.data.model.Entries;
 import com.example.notemanagement.data.repository.EntriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,8 +58,8 @@ public class EntriesServicesImpl implements EntriesServices{
     }
 
     @Override
-    public GetResponse updateEntries(EntriesUpdateRequest entriesUpdateRequest) {
-        com.example.notemanagement.data.model.Entries foundEntries = entriesRepository.findById(entriesUpdateRequest.getId())
+    public Entries updateEntries(int entryId, EntriesUpdateRequest entriesUpdateRequest) {
+        Entries foundEntries = entriesRepository.findById(entryId)
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
         foundEntries.setDateCreated(LocalDateTime.now().toString());
         foundEntries.setTitle(entriesUpdateRequest.getTitle() != null && !entriesUpdateRequest.getTitle().equals("")
@@ -66,7 +67,7 @@ public class EntriesServicesImpl implements EntriesServices{
         foundEntries.setBody(entriesUpdateRequest.getBody() != null && !entriesUpdateRequest.getBody().equals("")
                 ? entriesUpdateRequest.getBody() : foundEntries.getBody());
         entriesRepository.save(foundEntries);
-        return new GetResponse("Entry updated successfully");
+        return foundEntries;
     }
 //    @Override
 //    public Entries findEntryByTitle(String title) {
