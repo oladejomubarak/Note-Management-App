@@ -5,6 +5,8 @@ import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,20 +17,25 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AppUserServiceImpl implements AppUserService{
 
-    @Autowired
-    private AppUserRepository appUserRepository;
 
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private ConfirmationTokenService confirmationTokenService;
+    private final AppUserRepository appUserRepository;
+
+
+    private final EmailService emailService;
+
+    private final ConfirmationTokenService confirmationTokenService;
+
+
+    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     //private final PasswordEncoder passwordEncoder;
     @Override
     public String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException {
-        boolean emailExist = appUserRepository.existsAppUsersByEmailAddressIgnoreCase(
+        boolean emailExist = appUserRepository.existsByEmailAddressIgnoreCase(
                 createAppUserRequest.getEmailAddress());
         if(emailExist) {
             throw new IllegalStateException("email taken, choose another email");
@@ -100,13 +107,14 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-        var foundUser = findUserByEmailIgnoreCase(loginRequest.getEmail());
-        if(!foundUser.isEnabled()) throw new IllegalStateException("You are have not verified your account");
-        try {
-            if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword()))
-                throw new IllegalStateException("Incorrect password");
-        } catch (IllegalStateException e){
-            throw new RuntimeException(e.getMessage());
+        AppUser foundUser = findUserByEmailIgnoreCase(loginRequest.getEmail());
+
+        if(!foundUser.isEnabled()) {
+            throw new IllegalStateException("You have not verified your account");
+        }
+
+        if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword())) {
+            throw new IllegalStateException("Incorrect password");
         }
         return "You are successfully logged in";
     }
@@ -167,8 +175,21 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public AppUser findUserByEmailIgnoreCase(String email) {
-        return appUserRepository.findAppUserByEmailAddressIgnoreCase(email)
-                .orElseThrow(()-> new IllegalStateException("User not found"));
+        return appUserRepository.findByEmailAddressIgnoreCase(email).orElseThrow(()-> new IllegalStateException(
+                "User not found"));
+    }
+
+    @Override
+    public String deleteUserByEmail(String email) {
+        AppUser foundUser = findUserByEmailIgnoreCase(email);
+        appUserRepository.delete(foundUser);
+        return "user deleted";
+    }
+
+    @Override
+    public String deleteAllTokens() {
+        confirmationTokenRepository.deleteAll();
+        return "all tokens deleted";
     }
 
     private String generateToken(){

@@ -5,6 +5,7 @@ import com.example.notemanagement.exception.ApiResponse;
 import com.example.notemanagement.services.AppUserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,10 @@ import java.time.ZonedDateTime;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("api/v1")
+@RequiredArgsConstructor
 public class AppUserController {
 
-    @Autowired
-    private AppUserService appUserService;
+    private final AppUserService appUserService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerAppUser(@RequestBody CreateAppUserRequest createAppUserRequest,
@@ -36,6 +37,31 @@ public class AppUserController {
                     .build();
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         } catch (IllegalStateException e) {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .isSuccessful(false)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @GetMapping("/user/{email}")
+    public ResponseEntity<?> findUser(@PathVariable String email,
+                                          HttpServletRequest httpServletRequest) {
+        try {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .status(HttpStatus.OK.value())
+                    .data(appUserService.findUserByEmailIgnoreCase(email))
+                    .timeStamp(ZonedDateTime.now())
+                    .path(httpServletRequest.getRequestURI())
+                    .message("User found")
+                    .isSuccessful(true)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .message(e.getMessage())
@@ -101,7 +127,7 @@ public class AppUserController {
 
     }
 
-    @GetMapping("/login")
+    @GetMapping ("/login")
     public ResponseEntity<?> login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
         try {
             ApiResponse apiResponse = ApiResponse.builder()
@@ -188,5 +214,17 @@ public class AppUserController {
                     .build();
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
+    }
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<?>deleteAppUser(@RequestBody String email){
+        try {
+            return ResponseEntity.ok(appUserService.deleteUserByEmail(email));
+        }catch (IllegalStateException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("/delete-all-tokens")
+    public ResponseEntity<?>deleteAllTokens(){
+        return ResponseEntity.ok(appUserService.deleteAllTokens());
     }
 }

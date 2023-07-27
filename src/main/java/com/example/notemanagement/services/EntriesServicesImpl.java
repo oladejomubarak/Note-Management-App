@@ -7,7 +7,6 @@ import com.example.notemanagement.data.model.Entries;
 import com.example.notemanagement.data.repository.EntriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class EntriesServicesImpl implements EntriesServices{
@@ -25,26 +23,17 @@ public class EntriesServicesImpl implements EntriesServices{
     LocalDate dateNow = LocalDate.now();
     LocalTime timeNow = LocalTime.now();
 
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     String formattedDate = dateNow.format(dateFormatter);
 
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     String formattedTime = timeNow.format(timeFormatter);
     @Override
     public Entries createEntries(CreateEntriesRequest createEntriesRequest) {
-        String[] words = createEntriesRequest.getTitle().split(" ");
-
-        StringBuilder sb = new StringBuilder();
-        for (String word : words) {
-            String firstLetter = word.substring(0, 1).toUpperCase();
-            String restOfWord = word.substring(1);
-            String capitalizedWord = firstLetter + restOfWord;
-            sb.append(capitalizedWord).append(" ");
-        }
-        String modifiedTitle = sb.toString().trim();
+        String modifiedTitle = getTitleFormat(createEntriesRequest);
 
         Entries entries = new Entries();
-        entries.setDateCreated(formattedDate);
+        entries.setCreatedDate(formattedDate);
         entries.setTimeCreated(formattedTime);
         entries.setTitle(modifiedTitle);
         entries.setBody(createEntriesRequest.getBody());
@@ -57,15 +46,30 @@ public class EntriesServicesImpl implements EntriesServices{
         return entries;
     }
 
+    private String getTitleFormat(CreateEntriesRequest createEntriesRequest) {
+        String[] words = createEntriesRequest.getTitle().split(" ");
+
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            String firstLetter = word.substring(0, 1).toUpperCase();
+            String restOfWord = word.substring(1);
+            String capitalizedWord = firstLetter + restOfWord;
+            sb.append(capitalizedWord).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
     @Override
     public Entries updateEntries(int entryId, EntriesUpdateRequest entriesUpdateRequest) {
         Entries foundEntries = entriesRepository.findById(entryId)
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
-        foundEntries.setDateCreated(LocalDateTime.now().toString());
+//        foundEntries.setDateCreated(LocalDateTime.now().toString());
         foundEntries.setTitle(entriesUpdateRequest.getTitle() != null && !entriesUpdateRequest.getTitle().equals("")
                 ? entriesUpdateRequest.getTitle() : foundEntries.getTitle());
         foundEntries.setBody(entriesUpdateRequest.getBody() != null && !entriesUpdateRequest.getBody().equals("")
                 ? entriesUpdateRequest.getBody() : foundEntries.getBody());
+        foundEntries.setCreatedDate(foundEntries.getCreatedDate());
+        foundEntries.setTimeCreated(foundEntries.getTimeCreated());
         entriesRepository.save(foundEntries);
         return foundEntries;
     }
@@ -101,8 +105,8 @@ public class EntriesServicesImpl implements EntriesServices{
     @Override
     public List<Entries> findEntryByKeyword(String keyword) {
         boolean isValidKeyword = keyword.length() > 3;
-        List <com.example.notemanagement.data.model.Entries> foundEntries = new ArrayList<>();
-        for ( com.example.notemanagement.data.model.Entries entry: getAllEntries()) {
+        List <Entries> foundEntries = new ArrayList<>();
+        for (Entries entry: getAllEntries()) {
             if(isValidKeyword && (entry.getTitle().contains(keyword) || entry.getBody().contains(keyword)))
                 foundEntries.add(entry);
         }
@@ -112,8 +116,8 @@ public class EntriesServicesImpl implements EntriesServices{
     @Override
     public List<Entries> findEntryByTitleKeyword(String titleKeyword) {
         boolean isValidKeyword = titleKeyword.length() > 3;
-        List <com.example.notemanagement.data.model.Entries> foundEntries = new ArrayList<>();
-        for ( com.example.notemanagement.data.model.Entries entry: getAllEntries()) {
+        List <Entries> foundEntries = new ArrayList<>();
+        for (Entries entry: getAllEntries()) {
             if(isValidKeyword && (entry.getTitle().contains(titleKeyword)))
                 foundEntries.add(entry);
         }
@@ -127,7 +131,7 @@ public class EntriesServicesImpl implements EntriesServices{
         String dateInString = formattedDate.toString();
         List <Entries> foundEntries = new ArrayList<>();
         for ( Entries entry: getAllEntries()) {
-            if(entry.getDateCreated().equals(dateInString))
+            if(entry.getCreatedDate().equals(dateInString))
                 foundEntries.add(entry);
         }
         return foundEntries;
@@ -135,8 +139,8 @@ public class EntriesServicesImpl implements EntriesServices{
 
     @Override
     public List<Entries> findEntryByTitle(String entryTitle) {
-        List <com.example.notemanagement.data.model.Entries>foundEntries = new ArrayList<>();
-        for (com.example.notemanagement.data.model.Entries entry: getAllEntries()
+        List <Entries>foundEntries = new ArrayList<>();
+        for (Entries entry: getAllEntries()
              ) { if (entry.getTitle().equalsIgnoreCase(entryTitle)) foundEntries.add(entry);
 
         }

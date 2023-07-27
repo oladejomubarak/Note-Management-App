@@ -7,35 +7,33 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Data
 @RequiredArgsConstructor
-
+@Table(name = "app_user")
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "This field is required")
-    @NotEmpty(message = "This field is required")
     private String firstname;
-    @NotNull(message = "This field is required")
-    @NotEmpty(message = "This field is required")
+
     private String lastname;
-    @NotNull(message = "This field is required")
-    @NotEmpty(message = "This field is required")
     @Email(message = "The email is invalid")
     private String emailAddress;
-
-    @NotNull(message = "This field is required")
-    @NotEmpty(message = "This field is required")
     private String password;
 
     private boolean isEnabled = false;
 
     @OneToOne
     private Notes note;
+
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+//    private List<ConfirmationToken> confirmationTokens = new ArrayList<>();
 
 
     public AppUser(String firstname, String lastname, String emailAddress, String password){

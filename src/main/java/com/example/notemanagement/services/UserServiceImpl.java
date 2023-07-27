@@ -116,4 +116,10 @@ public class UserServiceImpl implements UserService{
     public String resetPassword(ResetPasswordRequest resetPasswordRequest) {
         return null;
     }
+
+    @Override
+    public String deleteUserByEmail(String email) {
+
+        return null;
+    }
 }

@@ -5,6 +5,8 @@ import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import jakarta.mail.MessagingException;
 
+import java.util.Optional;
+
 public interface AppUserService {
 
     String registerUser(CreateAppUserRequest createAppUserRequest) throws MessagingException;
@@ -19,4 +21,6 @@ public interface AppUserService {
     String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws MessagingException;
     String resetPassword(ResetPasswordRequest resetPasswordRequest);
     AppUser findUserByEmailIgnoreCase(String email);
+    String deleteUserByEmail(String email);
+    String deleteAllTokens();
 }

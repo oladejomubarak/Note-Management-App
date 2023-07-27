@@ -12,5 +12,6 @@ public interface UserService {
     GetResponse deleteUser(int id);
     String forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
     String resetPassword(ResetPasswordRequest resetPasswordRequest);
+     String deleteUserByEmail(String email);
 
 }

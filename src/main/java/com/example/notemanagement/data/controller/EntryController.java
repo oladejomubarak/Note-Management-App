@@ -24,9 +24,10 @@ private EntriesServices entriesServices;
     public ResponseEntity<?> createEntries(@RequestBody CreateEntriesRequest createEntriesRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(entriesServices.createEntries(createEntriesRequest));
     }
-    @PatchMapping("/update-entry")
-    public ResponseEntity<?> updateEntries(@RequestBody EntriesUpdateRequest entriesUpdateRequest){
-        return ResponseEntity.ok(entriesServices.updateEntries(entriesUpdateRequest));
+    @CrossOrigin
+    @PutMapping("/update-entry/{id}")
+    public ResponseEntity<?> updateEntries(@PathVariable int id, @RequestBody EntriesUpdateRequest entriesUpdateRequest){
+        return ResponseEntity.ok(entriesServices.updateEntries(id, entriesUpdateRequest));
     }
     @GetMapping("/view-entry/{id}")
     public ResponseEntity<?> viewEntryById(@PathVariable int id){

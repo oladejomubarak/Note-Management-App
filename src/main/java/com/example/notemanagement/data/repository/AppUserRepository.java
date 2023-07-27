@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    Optional<AppUser> findAppUserByEmailAddressIgnoreCase(String email);
+    Optional<AppUser> findByEmailAddressIgnoreCase(String email);
 
-    boolean existsAppUsersByEmailAddressIgnoreCase(String email);
+    boolean existsByEmailAddressIgnoreCase(String email);
 
-    String deleteAppUserByEmailAddress(String email);
+//    String deleteAppUserByEmailAddress(String email);
 }
