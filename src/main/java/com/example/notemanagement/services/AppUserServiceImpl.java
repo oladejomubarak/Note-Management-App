@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -107,9 +108,10 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-        AppUser foundUser = findUserByEmailIgnoreCase(loginRequest.getEmail());
+        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail());
+        if(Objects.equals(foundUser, null)) {throw new IllegalStateException("user not found");}
 
-        if(!foundUser.isEnabled()) {
+        if(Objects.equals(foundUser.isEnabled(), false)) {
             throw new IllegalStateException("You have not verified your account");
         }
 
