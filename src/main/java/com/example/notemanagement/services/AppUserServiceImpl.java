@@ -16,6 +16,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -108,14 +109,16 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-        AppUser foundUser = appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail());
-        if(Objects.equals(foundUser, null)) {throw new IllegalStateException("user not found");}
+        AppUser foundUser = appUserRepository.findByEmailAddressIgnoreCase(loginRequest.getEmail()).orElseThrow(()->
+                new IllegalStateException("user ain't found"));
+                // appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail());
+        if(Objects.equals(foundUser, null)){throw new IllegalStateException("user ain't found");}
 
-        if(Objects.equals(foundUser.isEnabled(), false)) {
+        if(Objects.equals(foundUser.isEnabled(), false)){
             throw new IllegalStateException("You have not verified your account");
         }
 
-        if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword())) {
+        if(!BCrypt.checkpw(loginRequest.getPassword(), foundUser.getPassword())){
             throw new IllegalStateException("Incorrect password");
         }
         return "You are successfully logged in";
