@@ -138,7 +138,7 @@ public class AppUserController {
                     .isSuccessful(true)
                     .build();
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .message(e.getMessage())
