@@ -23,14 +23,14 @@ public class AppUser {
     private String firstname;
 
     private String lastname;
-    @Email(message = "The email is invalid")
+    //@Email(message = "invalid email")
     private String emailAddress;
     private String password;
 
     private boolean isEnabled = false;
 
-    @OneToOne
-    private Notes note;
+//    @OneToOne
+//    private Notes note;
 
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
 //    private List<ConfirmationToken> confirmationTokens = new ArrayList<>();

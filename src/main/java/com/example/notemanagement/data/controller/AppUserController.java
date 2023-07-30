@@ -126,9 +126,8 @@ public class AppUserController {
         }
 
     }
-
     @GetMapping ("/login")
-    public ResponseEntity<?> login(LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
         try {
             ApiResponse apiResponse = ApiResponse.builder()
                     .status(HttpStatus.OK.value())
@@ -149,7 +148,6 @@ public class AppUserController {
                     .build();
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @DeleteMapping("/delete-appUser/{email}")

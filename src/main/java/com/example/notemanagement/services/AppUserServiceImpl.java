@@ -109,10 +109,7 @@ public class AppUserServiceImpl implements AppUserService{
 
     @Override
     public String login(LoginRequest loginRequest) {
-        AppUser foundUser = appUserRepository.findByEmailAddressIgnoreCase(loginRequest.getEmail()).orElseThrow(()->
-                new IllegalStateException("user ain't found"));
-                // appUserRepository.findAppUserByEmailAddressIgnoreCase(loginRequest.getEmail());
-        if(Objects.equals(foundUser, null)){throw new IllegalStateException("user ain't found");}
+        AppUser foundUser = findUserByEmailIgnoreCase(loginRequest.getEmail());
 
         if(Objects.equals(foundUser.isEnabled(), false)){
             throw new IllegalStateException("You have not verified your account");
@@ -181,7 +178,7 @@ public class AppUserServiceImpl implements AppUserService{
     @Override
     public AppUser findUserByEmailIgnoreCase(String email) {
         return appUserRepository.findByEmailAddressIgnoreCase(email).orElseThrow(()-> new IllegalStateException(
-                "User not found"));
+                "No user found with such email"));
     }
 
     @Override
