@@ -4,19 +4,16 @@ import com.example.notemanagement.data.dtos.request.*;
 import com.example.notemanagement.data.model.AppUser;
 import com.example.notemanagement.data.model.ConfirmationToken;
 import com.example.notemanagement.data.repository.AppUserRepository;
+import com.example.notemanagement.data.repository.ConfirmationTokenRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Slf4j

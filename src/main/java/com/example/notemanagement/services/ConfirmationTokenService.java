@@ -1,6 +1,7 @@
 package com.example.notemanagement.services;
 
 import com.example.notemanagement.data.model.ConfirmationToken;
+import com.example.notemanagement.data.repository.ConfirmationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.example.notemanagement.services;
+package com.example.notemanagement.data.repository;
 
 import com.example.notemanagement.data.model.ConfirmationToken;
 import jakarta.transaction.Transactional;
